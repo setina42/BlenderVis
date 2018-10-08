@@ -1,19 +1,33 @@
 import bpy
 from bpy import context
+import os
+import sys
 
+##Function to deselect all objects
 def deselect():
     for obj in bpy.data.objects:
         obj.select = False
 
+##File path
+#path = os.path.abspath('.')
+path = "C:/Users/tinas/Desktop/Sync/Rec"
+
+
+
 ## Set Basic Scene: Import reference atlas mesh and desired gene expression/connectivity meshed
 ##, add a basic lamp and camera set to predefined location and rotation
 
+#Delete all present objects if any
+for obj in bpy.data.objects:
+    obj.select = True
+    bpy.ops.object.delete()
+
 #Import Reference Atlas
-bpy.ops.import_scene.obj(filepath="C:/Users/tinas/Desktop/Sync/Rec/abi2dsurqec_40micron_masked_affine.obj")
+bpy.ops.import_scene.obj(filepath= path +"/abi2dsurqec_40micron_masked_affine.obj")
 Atlas = bpy.context.selected_objects[0]
 
 #Import Gene data
-bpy.ops.import_scene.obj(filepath="C:/Users/tinas/Desktop/Sync/Rec/warped_withref200.nii.gz_affine.obj")
+bpy.ops.import_scene.obj(filepath=path + "/warped_withref200.nii.gz_affine.obj")
 GeneData = bpy.context.selected_objects[0]
 
 #Add a lamp, set location and rotation
@@ -44,12 +58,10 @@ deselect()
 Camera.select = True
 
 bpy.context.object.rotation_mode = 'AXIS_ANGLE'
-bpy.context.object.rotation_axis_angle[0] = 3.02814
+bpy.context.object.rotation_axis_angle[0] = 3.12814
 bpy.context.object.rotation_axis_angle[1] = 0.000353694
 bpy.context.object.rotation_axis_angle[2] = 0.487187
-bpy.context.object.rotation_axis_angle[3] = -0.916546
-
-
+bpy.context.object.rotation_axis_angle[3] = -1.11655
 
 
 
@@ -91,13 +103,40 @@ deselect()
 
 bpy.data.scenes["Scene"].camera = Camera
 
-bpy.data.scenes["Scene"].render.filepath = "C:/Users/tinas/Desktop/Sync/Rec/Pic1"
+bpy.data.scenes["Scene"].render.filepath = path + "/Pic1"
 bpy.ops.render.render( write_still=True )
 
 Atlas.select=True
 GeneData.select = True
-bpy.ops.transform.rotate(value=1.21921, axis=(-0.00457997, 0.716912, -0.697148), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+#bpy.ops.transform.rotate(value=1.21921, axis=(-0.00457997, 0.716912, -0.697148), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
 
 
-bpy.data.scenes["Scene"].render.filepath = "C:/Users/tinas/Desktop/Sync/Rec/Pic2"
-bpy.ops.render.render( write_still=True )
+## Try moving the camera instead of the brain
+def look_at(obj_camera, point):
+    loc_camera = Camera.location
+
+    direction = point - loc_camera
+    # point the cameras '-Z' and use its 'Y' as up
+    rot_quat = direction.to_track_quat('-Z', 'Y')
+
+    # assume we're using euler rotation
+    obj_camera.rotation_euler = rot_quat.to_euler()
+
+
+
+
+#Set camera to a specific location, render and save image
+def TakePic(FileName,loc):
+    Camera.location = loc
+    deselect()
+    Camera.select= True
+    bpy.context.object.rotation_mode = 'XYZ'
+    look_at(Camera,Atlas.location)
+    bpy.data.scenes["Scene"].render.filepath = path + "/" + FileName
+    bpy.ops.render.render( write_still=True )
+    
+TakePic("Default", Camera.location)  
+TakePic("TopView", (0,-30,0))
+TakePic("Side", (10,-18,18))
+    
+
