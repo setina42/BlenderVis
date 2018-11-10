@@ -25,8 +25,6 @@ path = os.path.abspath('.')
 
 #Get rid of blender default objects
 
-for o in bpy.data.objects:
-    o.select=True
 
 bpy.ops.object.delete()
 
@@ -36,7 +34,7 @@ bpy.ops.import_scene.obj(filepath= path +"/ambmc2dsurqec_15micron_cut_mesh_1_dec
 Atlas = bpy.context.selected_objects[0]
 
 #Import Gene data
-bpy.ops.import_scene.obj(filepath=path + "/warped_withref200_2.obj")
+bpy.ops.import_scene.obj(filepath=path + "/warped_withref200.nii.gz_affine.obj")
 GeneData = bpy.context.selected_objects[0]
 
 #Add a lamp, set location and rotation
@@ -74,7 +72,7 @@ bpy.context.object.rotation_axis_angle[3] = -1.11655
 
 
 
-## Add colour and material to the meshes for visualization
+:## Add colour and material to the meshes for visualization
 
 deselect()
 
@@ -84,7 +82,7 @@ MatAtlas = bpy.data.materials.new(name="atlas_material")
 #bpy.ops.material.new()
 MatAtlas.diffuse_color = (0.178419, 0.178419, 0.178419)
 MatAtlas.use_transparency = True
-MatAtlas.alpha = 0.7
+MatAtlas.alpha = 0.4
 
 
 MatGenes = bpy.data.materials.new(name="gene_material")
@@ -108,7 +106,7 @@ step_count = 32
 #for step in range(0, step_count):
 #    origin.rotation_euler[2] = radians(step * (360.0 / step_count))
 #
-deselect() 
+deselect()
 
 bpy.data.scenes["Scene"].camera = Camera
 
