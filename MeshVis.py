@@ -10,7 +10,7 @@ def deselect():
 
 ##File path
 #path = os.path.abspath('.')
-path = "C:/Users/tinas/Desktop/Sync/Rec"
+path = os.path.abspath('.')
 
 
 
@@ -18,16 +18,25 @@ path = "C:/Users/tinas/Desktop/Sync/Rec"
 ##, add a basic lamp and camera set to predefined location and rotation
 
 #Delete all present objects if any
-for obj in bpy.data.objects:
-    obj.select = True
-    bpy.ops.object.delete()
+#for obj in bpy.data.objects:
+#    obj.select = True
+#    bpy.ops.object.delete()
+
+
+#Get rid of blender default objects
+
+for o in bpy.data.objects:
+    o.select=True
+
+bpy.ops.object.delete()
+
 
 #Import Reference Atlas
-bpy.ops.import_scene.obj(filepath= path +"/abi2dsurqec_40micron_masked_affine.obj")
+bpy.ops.import_scene.obj(filepath= path +"/ambmc2dsurqec_15micron_cut_mesh_1_decimated_04.obj")
 Atlas = bpy.context.selected_objects[0]
 
 #Import Gene data
-bpy.ops.import_scene.obj(filepath=path + "/warped_withref200.nii.gz_affine.obj")
+bpy.ops.import_scene.obj(filepath=path + "/warped_withref200_2.obj")
 GeneData = bpy.context.selected_objects[0]
 
 #Add a lamp, set location and rotation
